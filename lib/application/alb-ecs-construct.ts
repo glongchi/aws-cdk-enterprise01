@@ -39,6 +39,7 @@ export class AlbEcsConstruct extends Construct {
 
     // Allow HTTP traffic from the load balancer
     ec2SecurityGroup.addIngressRule(
+    // ec2.Peer.anyIpv4(),
     Peer.securityGroupId(albSecurityGroup.securityGroupId),
     Port.tcp(80),
     'Allow All HTTP traffic from ALB on port 80'
