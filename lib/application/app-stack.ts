@@ -16,7 +16,7 @@ export class AppStack extends Stack {
     super(scope, id, props);
 
     // Initialize VPC  properties
-    const vpcProps = {
+    const vpcProps: IVpcProps = {
       namePrefix: `EMD-${props.config.deploymentEnvironment}`,
       maxAzs: props.config.maxAzs,
       natGateways: props.config.natGateways,
@@ -25,8 +25,9 @@ export class AppStack extends Stack {
       privateSubnetCidrMask: props.config.privateSubnetCidrMask,
     };
     // Initialize Logging Bucket properties
-    const loggingBucketProps = {
-      logRetention: props.config.logRetention,
+    const loggingBucketProps: ILoggingBucketProps = {
+      logInstantAccessDuration: props.config.logInstantAccessDuration,
+      logExpirationDuration: props.config.logExpirationDuration,
       region: props.config.region,
       deploymentEnvronment: props.config.deploymentEnvironment,
       namePrefix: props.config.appName,

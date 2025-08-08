@@ -1,5 +1,5 @@
 import { Construct } from "constructs";
-import { SubnetConfiguration, Vpc } from "aws-cdk-lib/aws-ec2";
+import { IVpc, SubnetConfiguration, Vpc } from "aws-cdk-lib/aws-ec2";
 import * as cdk from "aws-cdk-lib";
 import * as ec2 from "aws-cdk-lib/aws-ec2";
 import { IBaseProps } from "../shared/base.props";
@@ -12,28 +12,31 @@ export interface IVpcProps extends IBaseProps {
   namePrefix: string;
   maxAzs?: number;
   natGateways?: number;
-  cidr?: string;
+  cidr: string;
   publicSubnetCidrMask?: number;
   privateSubnetCidrMask?: number;
 }
 
 export class VpcConstruct extends Construct {
-  public readonly vpc: Vpc;
+  public readonly vpc: IVpc;
 
   constructor(scope: Construct, id: string, props: IVpcProps) {
     super(scope, id);
 
-    this.vpc = new Vpc(this, "Vpc", {
-      maxAzs: props.maxAzs,
-      cidr: props.cidr,
-      natGateways: props.natGateways,
-      subnetConfiguration: this.createSubnetConfigurations(
+    const subnets =this.createSubnetConfigurations(
         props.namePrefix,
         props.maxAzs || 2,
         props.publicSubnetCidrMask || 24,
         props.privateSubnetCidrMask || 24,
-      ),
+      );
+
+    this.vpc = new Vpc(this, "Vpc", {
+      maxAzs: props.maxAzs,
+      ipAddresses: ec2.IpAddresses.cidr(props.cidr),
+      natGateways: props.natGateways,
+      subnetConfiguration: subnets
     });
+
   }
 
   /**
@@ -52,7 +55,7 @@ export class VpcConstruct extends Construct {
   ): SubnetConfiguration[] {
     // Validate azCount to be between 1 and 6
     if (azCount < 1 || azCount > 6) {
-      throw new Error("azCount must be between 1 and 6");
+      throw new Error("maxAzs must be between 1 and 6");
     }
 
     const output: SubnetConfiguration[] = [];
@@ -72,13 +75,6 @@ export class VpcConstruct extends Construct {
           privateSubnetCidrMask,
         ),
       );
-
-      // output.push(
-      //   this.createSubnetConfiguration(
-      //     `${namePrefix}-IsolatedSubnet${i}`,
-      //     ec2.SubnetType.PRIVATE_ISOLATED,
-      //   ),
-      // );
     }
     return output;
   }

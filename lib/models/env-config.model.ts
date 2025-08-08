@@ -14,6 +14,8 @@ export interface IEnvConfig {
   cidr: string;
   publicSubnetCidrMask?: number;
   privateSubnetCidrMask?: number;
-  logRetention?: number;
+  // log frequent access duration before transitioning to infrequent access
+  logInstantAccessDuration: number;
+  logExpirationDuration: number;
   // Add any other environment-specific properties you need
 }

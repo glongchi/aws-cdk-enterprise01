@@ -134,7 +134,7 @@ export class AlbEcsConstruct extends Construct {
       taskDefinition: fargateTaskDefinition,
       platformVersion: FargatePlatformVersion.LATEST,
       vpcSubnets: {
-        subnets: [props.vpc.publicSubnets[0], props.vpc.publicSubnets[1]],
+        subnets: props.vpc.privateSubnets,
       },
       securityGroups: [ec2SecurityGroup],
     });
@@ -160,7 +160,7 @@ export class AlbEcsConstruct extends Construct {
       securityGroup: albSecurityGroup,
       loadBalancerName: `${props.namePrefix}-AppALB`,
       vpcSubnets: {
-        subnetType: SubnetType.PUBLIC,
+        // subnetType: SubnetType.PUBLIC,
         subnets: props.vpc.publicSubnets,
       },
     });
