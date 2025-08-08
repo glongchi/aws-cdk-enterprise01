@@ -1,0 +1,13 @@
+{
+
+  "account": "123456789012",
+ "region": "us-east-1",
+  "appName": "enterprise-app-dev",
+  "dpeloymentEnvronment": "dev",
+  "namePrefix": "EMD-dev",
+  "maxAzs": 2,
+  "natGateways": 1,
+  "cidr": "10.0.0.0/16",
+  "publicSubnetCidrMask": 24,
+  "privateSubnetCidrMask": 24
+}

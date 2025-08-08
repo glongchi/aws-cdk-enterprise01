@@ -9,6 +9,7 @@ import {
   ContainerDefinition,
   AwsLogDriver,
   FargatePlatformVersion,
+  Protocol,
 } from "aws-cdk-lib/aws-ecs";
 import {
   ApplicationLoadBalancer,
@@ -20,13 +21,16 @@ import {
   IVpc,
   Peer,
   Port,
-  Protocol,
   SecurityGroup,
   SubnetType,
 } from "aws-cdk-lib/aws-ec2";
 import path from "path";
+import { Logging } from "aws-cdk-lib/custom-resources";
+import { ILoggingBucketProps, LoggingBucket } from "../shared/logging-bucket";
+import { IBaseProps } from "../shared/base.props";
+import * as ecs from 'aws-cdk-lib/aws-ecs';
 
-interface AlbEcsProps {
+export interface IAlbEcsProps extends IBaseProps {
   vpc: IVpc;
 }
 
@@ -34,8 +38,8 @@ export class AlbEcsConstruct extends Construct {
   constructor(
     scope: Construct,
     id: string,
-    namePrefix: string,
-    props: AlbEcsProps,
+    props: IAlbEcsProps,
+    loggingBucketProps?: ILoggingBucketProps
   ) {
     super(scope, id);
 
@@ -44,7 +48,7 @@ export class AlbEcsConstruct extends Construct {
 
     const albSecurityGroup = new SecurityGroup(this, "AlbSecurityGroup", {
       vpc: props.vpc,
-      securityGroupName: `${namePrefix}-AlbSecurityGroup`,
+      securityGroupName: `${props.namePrefix}-AlbSecurityGroup`,
     });
     // Allow HTTP traffic from the load balancer
     albSecurityGroup.addIngressRule(
@@ -55,7 +59,7 @@ export class AlbEcsConstruct extends Construct {
 
     // Create Security Group firewall settings
     const ec2SecurityGroup = new SecurityGroup(this, "EC2SecurityGroup", {
-      securityGroupName: `${namePrefix}-EC2SecurityGroup`,
+      securityGroupName: `${props.namePrefix}-EC2SecurityGroup`,
       vpc: props.vpc,
       allowAllOutbound: true,
     });
@@ -72,14 +76,13 @@ export class AlbEcsConstruct extends Construct {
 
     //#region ECS Cluster and Task Definition
     // Create ECS Cluster
-
     const cluster = new Cluster(this, "EcsCluster", {
       vpc: props.vpc,
-      clusterName: `${namePrefix}-EcsCluster`,
+      clusterName: `${props.namePrefix}-EcsCluster`,
       //   containerInsights: true,
       //   enableFargateCapacityProviders: true,
       //   defaultCloudMapNamespace: {
-      //     name: `${namePrefix}.local`,
+      //     name: `${props.namePrefix}.local`,
       //   },
       // Uncomment the following line if you want to enable service discovery
       // enableServiceDiscovery: true,
@@ -90,7 +93,7 @@ export class AlbEcsConstruct extends Construct {
       this,
       "FargateTaskDefinition",
       {
-        family: `${namePrefix}-fargateTaskDefinition`,
+        family: `${props.namePrefix}-fargateTaskDefinition`,
         cpu: 512,
         memoryLimitMiB: 1024,
         runtimePlatform: {
@@ -155,7 +158,7 @@ export class AlbEcsConstruct extends Construct {
       internetFacing: true,
       ipAddressType: IpAddressType.IPV4,
       securityGroup: albSecurityGroup,
-      loadBalancerName: `${namePrefix}-AppALB`,
+      loadBalancerName: `${props.namePrefix}-AppALB`,
       vpcSubnets: {
         subnetType: SubnetType.PUBLIC,
         subnets: props.vpc.publicSubnets,
@@ -169,8 +172,9 @@ export class AlbEcsConstruct extends Construct {
     });
 
     // Add listener target
-    httpListener.addTargets("ECS", {
+    httpListener.addTargets("ECSAppTarget", {
       protocol: ApplicationProtocol.HTTP,
+      targetGroupName: `${props.namePrefix}-AppTG`,
       targets: [
         service.loadBalancerTarget({
           containerName: "EMD-FargateContainer",
@@ -178,6 +182,17 @@ export class AlbEcsConstruct extends Construct {
       ],
     });
 
+    if (loggingBucketProps) {
+      // Enable access logging for the ALB
+    const loggingBucket = new LoggingBucket(this, "AccessLogsBucket",loggingBucketProps)
+    alb.logAccessLogs(loggingBucket.bucket, `${props.namePrefix}-alb-logs`);
+
+    }
+
+    //#endregion
+
+
+    //#region 
     //#endregion
 
     // listener.addTargets('AppTargets', {
