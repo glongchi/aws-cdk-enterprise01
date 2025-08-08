@@ -1,4 +1,3 @@
-
 /**
  * common  base properties for constructs, stacks, and applications
  * @interface IBaseProps

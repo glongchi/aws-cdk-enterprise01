@@ -8,29 +8,25 @@ import { IBaseProps } from "../shared/base.props";
  * Interface for VPC properties
  * @interface IVpcProps
  */
-export interface IVpcProps extends IBaseProps {  
+export interface IVpcProps extends IBaseProps {
   namePrefix: string;
-    maxAzs?: number;
-    natGateways?: number ;
-    cidr?: string;
-    publicSubnetCidrMask?: number ;
-    privateSubnetCidrMask?: number ;
+  maxAzs?: number;
+  natGateways?: number;
+  cidr?: string;
+  publicSubnetCidrMask?: number;
+  privateSubnetCidrMask?: number;
 }
 
 export class VpcConstruct extends Construct {
   public readonly vpc: Vpc;
 
-  constructor(
-    scope: Construct,
-    id: string,
-    props: IVpcProps
-  ) {
+  constructor(scope: Construct, id: string, props: IVpcProps) {
     super(scope, id);
 
     this.vpc = new Vpc(this, "Vpc", {
       maxAzs: props.maxAzs,
-      cidr: props.cidr, 
-      natGateways: props.natGateways ,
+      cidr: props.cidr,
+      natGateways: props.natGateways,
       subnetConfiguration: this.createSubnetConfigurations(
         props.namePrefix,
         props.maxAzs || 2,
@@ -54,7 +50,6 @@ export class VpcConstruct extends Construct {
     publicSubnetCidrMask: number,
     privateSubnetCidrMask: number,
   ): SubnetConfiguration[] {
-
     // Validate azCount to be between 1 and 6
     if (azCount < 1 || azCount > 6) {
       throw new Error("azCount must be between 1 and 6");

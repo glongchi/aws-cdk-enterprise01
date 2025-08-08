@@ -28,7 +28,7 @@ import path from "path";
 import { Logging } from "aws-cdk-lib/custom-resources";
 import { ILoggingBucketProps, LoggingBucket } from "../shared/logging-bucket";
 import { IBaseProps } from "../shared/base.props";
-import * as ecs from 'aws-cdk-lib/aws-ecs';
+import * as ecs from "aws-cdk-lib/aws-ecs";
 
 export interface IAlbEcsProps extends IBaseProps {
   vpc: IVpc;
@@ -39,7 +39,7 @@ export class AlbEcsConstruct extends Construct {
     scope: Construct,
     id: string,
     props: IAlbEcsProps,
-    loggingBucketProps?: ILoggingBucketProps
+    loggingBucketProps?: ILoggingBucketProps,
   ) {
     super(scope, id);
 
@@ -184,15 +184,17 @@ export class AlbEcsConstruct extends Construct {
 
     if (loggingBucketProps) {
       // Enable access logging for the ALB
-    const loggingBucket = new LoggingBucket(this, "AccessLogsBucket",loggingBucketProps)
-    alb.logAccessLogs(loggingBucket.bucket, `${props.namePrefix}-alb-logs`);
-
+      const loggingBucket = new LoggingBucket(
+        this,
+        "AccessLogsBucket",
+        loggingBucketProps,
+      );
+      alb.logAccessLogs(loggingBucket.bucket, `${props.namePrefix}-alb-logs`);
     }
 
     //#endregion
 
-
-    //#region 
+    //#region
     //#endregion
 
     // listener.addTargets('AppTargets', {

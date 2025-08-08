@@ -1,7 +1,6 @@
 {
-
   "account": "123456789012",
- "region": "us-east-1",
+  "region": "us-east-1",
   "appName": "enterprise-app-dev",
   "dpeloymentEnvronment": "dev",
   "namePrefix": "EMD-dev",
