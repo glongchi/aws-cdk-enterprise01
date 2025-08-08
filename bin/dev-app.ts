@@ -10,6 +10,8 @@ const config: IEnvConfig = loadConfig("dev");
 if (!config) {
   throw new Error("Configuration not loaded. Please check your config files.");
 }
-const appStack = new AppStack(app, "DevAppStack", {
+// create cdk App
+new AppStack(app, "DevAppStack", {
+  env: { account: config.account, region: config.region },
   config: config,
 });
