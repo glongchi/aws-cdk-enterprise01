@@ -41,12 +41,14 @@ export class AppStack extends Stack {
 
     // initialize albEcs construct props
     const albEcsProps:IAlbEcsProps ={
+           namePrefix: props.config.namePrefix,
           vpc : vpc.vpc,
           desiredCount:  props.config.container.desiredCount,
           minHealthyPercent: props.config.container.minHealthyPercent,
           maxHealthyPercent: props.config.container.maxHealthyPercent,
           cpu:  props.config.container.cpu,
-          memoryLimitMiB:  props.config.container.memoryLimitMiB
+          memoryLimitMiB:  props.config.container.memoryLimitMiB,
+          containerEnvironmentVariables: props.config.containerEnvironmentVariables
     }
 
     // ALB and ECS Cluster

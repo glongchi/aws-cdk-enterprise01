@@ -20,6 +20,7 @@ export interface IEnvConfig {
   logBucket: ILogBucketConfig;
   vpc: IVpcConfig,
   container:IContainerConfig
+  containerEnvironmentVariables: IContainerEnvironmentVariables
 }
 
 /**
@@ -42,6 +43,11 @@ export interface IContainerConfig{
       maxHealthyPercent:number
       cpu: number,
       memoryLimitMiB: number
+}
+
+
+export interface IContainerEnvironmentVariables{
+      favoriteDessert: string
 }
 
 /**

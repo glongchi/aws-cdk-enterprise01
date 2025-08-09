@@ -40,6 +40,7 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as path from 'path';
 import { IBaseProps } from '../shared/base.props';
 import { ILoggingBucketProps, LoggingBucket } from '../shared/logging-bucket';
+import { IContainerEnvironmentVariables } from "../models/env-config.model";
 
 export interface IAlbEcsProps extends IBaseProps {
   vpc: ec2.IVpc;
@@ -49,6 +50,7 @@ export interface IAlbEcsProps extends IBaseProps {
   maxHealthyPercent:number
   cpu: number,
   memoryLimitMiB: number,
+  containerEnvironmentVariables: IContainerEnvironmentVariables
 }
 
 export class AlbEcsConstruct extends Construct {
@@ -137,9 +139,18 @@ export class AlbEcsConstruct extends Construct {
         ],
         environment: {
           EMD_VAR: "option 1",
-          FAVORITE_DESSERT: "ice cream",
+          FAVORITE_DESSERT: props.containerEnvironmentVariables.favoriteDessert,
         },
         logging: new ecs.AwsLogDriver({ streamPrefix: "infra" }),
+      // health check
+      healthCheck: {
+        command: [ "CMD-SHELL", "curl -f http://localhost/ || exit 1" ],
+        // the properties below are optional
+        interval: cdk.Duration.seconds(30),
+        retries: 3,
+        startPeriod: cdk.Duration.seconds(10),
+        timeout: cdk.Duration.seconds(10),
+      },
       },
     );
 
