@@ -1,14 +1,9 @@
 {
   "account": "489600149633",
   "region": "us-east-1",
-  "appName": "enterprise-app-dev",
-  "dpeloymentEnvronment": "dev",
-  "namePrefix": "EMD-dev",
-  "maxAzs": 2,
-  "natGateways": 1,
-  "cidr": "10.0.0.0/16",
-  "publicSubnetCidrMask": 24,
-  "privateSubnetCidrMask": 24,
-  "logInstantAccessDuration":30,
-  "logExpirationDuration":60
+    "vpc":{
+    "maxAzs": 3,
+    "natGateways": 1,
+    "cidr": "10.0.0.0/17"
+  }
 }

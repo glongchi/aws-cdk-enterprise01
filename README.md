@@ -40,7 +40,7 @@ cdk-app/
 
 ### 🔧 Prerequisites
 The following  Make sure you have the following ap
-- Node.js ≥ v18 : Follow this [link](https://nodejs.org/en/download) for installation instruction for Mac or windows
+- Node.js >=18.0.0 <20.0.0: Follow this [link](https://nodejs.org/en/download) for installation instruction for Mac or windows
 - AWS CLI v2 installation: Installation [Link](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
 
 - AWS CLI configured (`aws configure`)

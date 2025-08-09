@@ -23,80 +23,87 @@ export class VpcConstruct extends Construct {
   constructor(scope: Construct, id: string, props: IVpcProps) {
     super(scope, id);
 
-    const subnets =this.createSubnetConfigurations(
-        props.namePrefix,
-        props.maxAzs || 2,
-        props.publicSubnetCidrMask || 24,
-        props.privateSubnetCidrMask || 24,
-      );
 
     this.vpc = new Vpc(this, "Vpc", {
+      // vpcName: `${props.namePrefix}-Vpc`,
       maxAzs: props.maxAzs,
       ipAddresses: ec2.IpAddresses.cidr(props.cidr),
       natGateways: props.natGateways,
-      subnetConfiguration: subnets
+      subnetConfiguration: [
+        {
+          cidrMask: props.publicSubnetCidrMask,
+          name: "Public",
+          subnetType: ec2.SubnetType.PUBLIC,
+        },
+        {
+          cidrMask: props.privateSubnetCidrMask,
+          name: "Private",
+          subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
+        },
+      ],
     });
 
   }
 
-  /**
-   *
-   * @param namePrefix
-   * @param azCount
-   * @param publicSubnetCidrMask
-   * @param privateSubnetCidrMask
-   * @returns
-   */
-  private createSubnetConfigurations(
-    namePrefix: string,
-    azCount: number,
-    publicSubnetCidrMask: number,
-    privateSubnetCidrMask: number,
-  ): SubnetConfiguration[] {
-    // Validate azCount to be between 1 and 6
-    if (azCount < 1 || azCount > 6) {
-      throw new Error("maxAzs must be between 1 and 6");
-    }
+  // /**
+  //  *
+  //  * @param namePrefix
+  //  * @param azCount
+  //  * @param publicSubnetCidrMask
+  //  * @param privateSubnetCidrMask
+  //  * @returns
+  //  */
+  // private createSubnetConfigurations(
+  //   namePrefix: string,
+  //   azCount: number,
+  //   publicSubnetCidrMask: number,
+  //   privateSubnetCidrMask: number,
+  // ): SubnetConfiguration[] {
+  //   // Validate azCount to be between 1 and 6
+  //   if (azCount < 1 || azCount > 6) {
+  //     throw new Error("maxAzs must be between 1 and 6");
+  //   }
 
-    const output: SubnetConfiguration[] = [];
-    // Create subnet configurations based on the number of availability zones
-    for (let i = 1; i <= azCount; i++) {
-      output.push(
-        this.createSubnetConfiguration(
-          `${namePrefix}-PublicSubnet${i}`,
-          ec2.SubnetType.PUBLIC,
-          publicSubnetCidrMask,
-        ),
-      );
-      output.push(
-        this.createSubnetConfiguration(
-          `${namePrefix}-PrivateSubnet${i}`,
-          ec2.SubnetType.PRIVATE_WITH_EGRESS,
-          privateSubnetCidrMask,
-        ),
-      );
-    }
-    return output;
-  }
+  //   const output: SubnetConfiguration[] = [];
+  //   // Create subnet configurations based on the number of availability zones
+  //   for (let i = 1; i <= azCount; i++) {
+  //     output.push(
+  //       this.createSubnetConfiguration(
+  //         `${namePrefix}-PublicSubnet${i}`,
+  //         ec2.SubnetType.PUBLIC,
+  //         publicSubnetCidrMask,
+  //       ),
+  //     );
+  //     output.push(
+  //       this.createSubnetConfiguration(
+  //         `${namePrefix}-PrivateSubnet${i}`,
+  //         ec2.SubnetType.PRIVATE_WITH_EGRESS,
+  //         privateSubnetCidrMask,
+  //       ),
+  //     );
+  //   }
+  //   return output;
+  // }
 
-  /**
-   * Helper function that generates a VPC subnet configuration.
-   * @param subnetName - The name of the subnet
-   * @param subnetType - The type of the subnet (e.g., PUBLIC, PRIVATE)
-   * @param CidrMask - The CIDR mask for the subnet
-   * @returns A SubnetConfiguration object
-   */
+  // /**
+  //  * Helper function that generates a VPC subnet configuration.
+  //  * @param subnetName - The name of the subnet
+  //  * @param subnetType - The type of the subnet (e.g., PUBLIC, PRIVATE)
+  //  * @param CidrMask - The CIDR mask for the subnet
+  //  * @returns A SubnetConfiguration object
+  //  */
 
-  private createSubnetConfiguration(
-    subnetName: string,
-    subnetType: ec2.SubnetType,
-    cidrMask: number,
-  ): ec2.SubnetConfiguration {
-    const subnetConfig: SubnetConfiguration = {
-      name: subnetName,
-      subnetType: subnetType,
-      cidrMask: cidrMask,
-    };
-    return subnetConfig;
-  }
+  // private createSubnetConfiguration(
+  //   subnetName: string,
+  //   subnetType: ec2.SubnetType,
+  //   cidrMask: number,
+  // ): ec2.SubnetConfiguration {
+  //   const subnetConfig: SubnetConfiguration = {
+  //     name: subnetName,
+  //     subnetType: subnetType,
+  //     cidrMask: cidrMask,
+  //   };
+  //   return subnetConfig;
+  // }
+
 }

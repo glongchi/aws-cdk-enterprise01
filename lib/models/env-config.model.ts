@@ -4,7 +4,7 @@
 export interface IEnvConfig {
   account: string;
   region: string;
-  appName: string;
+  appPrefix: string;
   deploymentEnvironment: string;
   deploymentEnvironmentIndex?: number;
 
@@ -15,7 +15,41 @@ export interface IEnvConfig {
   publicSubnetCidrMask?: number;
   privateSubnetCidrMask?: number;
   // log frequent access duration before transitioning to infrequent access
+  // logInstantAccessDuration: number;
+  // logExpirationDuration: number;
+  logBucket: ILogBucketConfig;
+  vpc: IVpcConfig,
+  container:IContainerConfig
+}
+
+/**
+ * 
+ */
+export interface IVpcConfig{
+       maxAzs?: number;
+      natGateways?: number;
+      cidr: string;
+      publicSubnetCidrMask?: number;
+      privateSubnetCidrMask?: number;
+}
+
+/**
+ * 
+ */
+export interface IContainerConfig{
+      desiredCount: number,
+      minHealthyPercent:number,
+      maxHealthyPercent:number
+      cpu: number,
+      memoryLimitMiB: number
+}
+
+/**
+ * 
+ */
+export interface ILogBucketConfig{
+  // log frequent access duration before transitioning to infrequent access
   logInstantAccessDuration: number;
   logExpirationDuration: number;
-  // Add any other environment-specific properties you need
+
 }

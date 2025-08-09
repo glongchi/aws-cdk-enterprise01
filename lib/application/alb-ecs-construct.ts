@@ -1,37 +1,54 @@
 import { Construct } from "constructs";
-import {
-  Cluster,
-  ContainerImage,
-  FargateTaskDefinition,
-  FargateService,
-  CpuArchitecture,
-  OperatingSystemFamily,
-  ContainerDefinition,
-  AwsLogDriver,
-  FargatePlatformVersion,
-  Protocol,
-} from "aws-cdk-lib/aws-ecs";
-import {
-  ApplicationLoadBalancer,
-  ApplicationProtocol,
-  IpAddressType,
-} from "aws-cdk-lib/aws-elasticloadbalancingv2";
-import { Duration } from "aws-cdk-lib";
-import {
-  IVpc,
-  Peer,
-  Port,
-  SecurityGroup,
-  SubnetType,
-} from "aws-cdk-lib/aws-ec2";
-import path from "path";
-import { Logging } from "aws-cdk-lib/custom-resources";
-import { ILoggingBucketProps, LoggingBucket } from "../shared/logging-bucket";
-import { IBaseProps } from "../shared/base.props";
-import * as ecs from "aws-cdk-lib/aws-ecs";
+// import {
+//   Cluster,
+//   ContainerImage,
+//   FargateTaskDefinition,
+//   FargateService,
+//   CpuArchitecture,
+//   OperatingSystemFamily,
+//   ContainerDefinition,
+//   AwsLogDriver,
+//   FargatePlatformVersion,
+//   Protocol,
+// } from "aws-cdk-lib/aws-ecs";
+// import {
+//   ApplicationLoadBalancer,
+//   ApplicationProtocol,
+//   IpAddressType,
+// } from "aws-cdk-lib/aws-elasticloadbalancingv2";
+// import { Duration } from "aws-cdk-lib";
+// import {
+//   IVpc,
+//   Peer,
+//   Port,
+//   SecurityGroup,
+//   SubnetType,
+// } from "aws-cdk-lib/aws-ec2";
+// import path from "path";
+// import { Logging } from "aws-cdk-lib/custom-resources";
+// import { ILoggingBucketProps, LoggingBucket } from "../shared/logging-bucket";
+// import { IBaseProps } from "../shared/base.props";
+// import * as ecs from "aws-cdk-lib/aws-ecs";
+
+import 'source-map-support/register';
+import * as cdk from 'aws-cdk-lib';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as ecs from 'aws-cdk-lib/aws-ecs';
+import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
+import { ApplicationProtocol } from 'aws-cdk-lib/aws-elasticloadbalancingv2';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as path from 'path';
+import { IBaseProps } from '../shared/base.props';
+import { ILoggingBucketProps, LoggingBucket } from '../shared/logging-bucket';
 
 export interface IAlbEcsProps extends IBaseProps {
-  vpc: IVpc;
+  vpc: ec2.IVpc;
+  //ECS container and service configs
+  desiredCount: number,
+  minHealthyPercent:number,
+  maxHealthyPercent:number
+  cpu: number,
+  memoryLimitMiB: number,
 }
 
 export class AlbEcsConstruct extends Construct {
@@ -45,20 +62,19 @@ export class AlbEcsConstruct extends Construct {
 
     //#region security groups
     // Create Security Group for ALB
-
-    const albSecurityGroup = new SecurityGroup(this, "AlbSecurityGroup", {
+    const albSecurityGroup = new ec2.SecurityGroup(this, "AlbSecurityGroup", {
       vpc: props.vpc,
       securityGroupName: `${props.namePrefix}-AlbSecurityGroup`,
     });
     // Allow HTTP traffic from the load balancer
     albSecurityGroup.addIngressRule(
-      Peer.anyIpv4(),
-      Port.tcp(80),
+      ec2.Peer.anyIpv4(),
+      ec2.Port.tcp(80),
       "Allow All HTTP traffic",
     );
 
     // Create Security Group firewall settings
-    const ec2SecurityGroup = new SecurityGroup(this, "EC2SecurityGroup", {
+    const ec2SecurityGroup = new ec2.SecurityGroup(this, "EC2SecurityGroup", {
       securityGroupName: `${props.namePrefix}-EC2SecurityGroup`,
       vpc: props.vpc,
       allowAllOutbound: true,
@@ -66,17 +82,16 @@ export class AlbEcsConstruct extends Construct {
 
     // Allow HTTP traffic from the load balancer
     ec2SecurityGroup.addIngressRule(
-      // ec2.Peer.anyIpv4(),
-      Peer.securityGroupId(albSecurityGroup.securityGroupId),
-      Port.tcp(80),
-      "Allow All HTTP traffic from ALB on port 80",
+      ec2.Peer.securityGroupId(albSecurityGroup.securityGroupId),
+      ec2.Port.tcp(80),
+      "Allow All HTTP traffic from ALB on port 80 only",
     );
 
     //#endregion
 
     //#region ECS Cluster and Task Definition
     // Create ECS Cluster
-    const cluster = new Cluster(this, "EcsCluster", {
+    const cluster = new ecs.Cluster(this, "EcsCluster", {
       vpc: props.vpc,
       clusterName: `${props.namePrefix}-EcsCluster`,
       //   containerInsights: true,
@@ -89,50 +104,53 @@ export class AlbEcsConstruct extends Construct {
     });
 
     // Create ECS Task Definition Template
-    const fargateTaskDefinition = new FargateTaskDefinition(
+    const fargateTaskDefinition = new ecs.FargateTaskDefinition(
       this,
       "FargateTaskDefinition",
       {
         family: `${props.namePrefix}-fargateTaskDefinition`,
-        cpu: 512,
-        memoryLimitMiB: 1024,
+        cpu: props.cpu,
+        memoryLimitMiB: props.memoryLimitMiB,
         runtimePlatform: {
-          cpuArchitecture: CpuArchitecture.ARM64,
-          operatingSystemFamily: OperatingSystemFamily.LINUX,
+          cpuArchitecture: ecs.CpuArchitecture.ARM64,
+          operatingSystemFamily: ecs.OperatingSystemFamily.LINUX,
         },
       },
     );
 
     // Create AWS Fargate Container
-    const fargateContainer = new ContainerDefinition(
+    const fargateContainer = new ecs.ContainerDefinition(
       this,
       `EMD-FargateContainer`,
       {
         taskDefinition: fargateTaskDefinition,
         containerName: "EMD-FargateContainer",
-        image: ContainerImage.fromAsset(
+        image: ecs.ContainerImage.fromAsset(
           path.resolve(__dirname, "../local-image"),
         ),
         portMappings: [
           {
             containerPort: 80,
             hostPort: 80,
-            protocol: Protocol.TCP,
+            protocol: ecs.Protocol.TCP,
           },
         ],
         environment: {
           EMD_VAR: "option 1",
           FAVORITE_DESSERT: "ice cream",
         },
-        logging: new AwsLogDriver({ streamPrefix: "infra" }),
+        logging: new ecs.AwsLogDriver({ streamPrefix: "infra" }),
       },
     );
 
-    const service = new FargateService(this, `EcsService`, {
+    const service = new ecs.FargateService(this, `EcsService`, {
       assignPublicIp: true,
       cluster: cluster,
       taskDefinition: fargateTaskDefinition,
-      platformVersion: FargatePlatformVersion.LATEST,
+      platformVersion: ecs.FargatePlatformVersion.LATEST,
+      desiredCount: props.desiredCount, // Sets the initial desired count to 2 tasks
+      minHealthyPercent:props.minHealthyPercent,
+      maxHealthyPercent:props.maxHealthyPercent,
       vpcSubnets: {
         subnets: props.vpc.privateSubnets,
       },
@@ -153,15 +171,14 @@ export class AlbEcsConstruct extends Construct {
     //#region Application Load Balancer
     // Create Application Load Balancer
 
-    const alb = new ApplicationLoadBalancer(this, "AppALB", {
+    const alb = new elbv2.ApplicationLoadBalancer(this, "AppALB", {
       vpc: props.vpc,
       internetFacing: true,
-      ipAddressType: IpAddressType.IPV4,
+      ipAddressType: elbv2.IpAddressType.IPV4,
       securityGroup: albSecurityGroup,
       loadBalancerName: `${props.namePrefix}-AppALB`,
       vpcSubnets: {
-        // subnetType: SubnetType.PUBLIC,
-        subnets: props.vpc.publicSubnets,
+        subnetType: ec2.SubnetType.PUBLIC
       },
     });
 
