@@ -40,7 +40,7 @@ This project explores using **AWS Cloud Development Kit (CDK)** in **TypeScript*
 │   ├── networking
 │   │   └── vpc-construct.ts # custom construct implementation of ECS cluster, service, task definitions
 │   ├── shared
-│   │   ├── base.props.ts # common attributes shared accross used accross constructs and stacks 
+│   │   ├── base.props.ts # common attributes shared accross used accross constructs and stacks
 │   │   └── logging-bucket.ts # logging bucket with configurable accross different environments
 │   └── utils
 │       └── helpers.ts # utililty method used accross
@@ -49,6 +49,7 @@ This project explores using **AWS Cloud Development Kit (CDK)** in **TypeScript*
 └── tsconfig.json
 
 ```
+
 Note the code has been refactored and organized to be maintenance friendly as the project grows.
 Due to the simplicity of the PoC, we are using a single stack, but can be reorganized into multiple stacks
 based on functionality , application tier, ... etc
@@ -58,42 +59,43 @@ based on functionality , application tier, ... etc
 ## ⚙️ Deployment Instructions
 
 ### 🔧 Prerequisites
+
 Install the following tools; required to deploy the infrastructure
+
 - Node.js >=18.0.0 <20.0.0: Follow this [link](https://nodejs.org/en/download) for installation instruction for Mac or windows
 - AWS CLI v2 installation: Installation [Link](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
 
 - AWS CLI configured (`aws configure`) : Configure your AWS Profile, ensure the user has the right permissions for the target AWS Account
 - AWS CDK ≥ v2.x (`npm install -g aws-cdk`)
-- Docker Runtime example Docker deskop (for building ECS images): See [link](https://docs.docker.com/desktop/) for docker Desktop installation 
+- Docker Runtime example Docker deskop (for building ECS images): See [link](https://docs.docker.com/desktop/) for docker Desktop installation
 
 ### 🧪 Install Dependencies
 
 ```bash
-# run the following command to install package dependencies in package.json 
+# run the following command to install package dependencies in package.json
 npm install
 ```
 
 ### 🏗️ Deploy to an Environment
 
-
 1. **Bootstrap the environment** (only once per account/region):
 
    ```bash
-   cdk bootstrap 
+   cdk bootstrap
    ```
 
 2. **Build and deploy**:
 
    ```bash
-   #build 
+   #build
    npm run build
-   #deploy 
-   #command definition in package.json script# export DEPLOYMENT_ENV='dev' && cdk deploy 
+   #deploy
+   #command definition in package.json script# export DEPLOYMENT_ENV='dev' && cdk deploy
    npm run deploy:dev
    ```
+
 3. ** Access Application **
    Go to AWS console and copy the DNS name of the ALB the application(browser, Postman, or curl command) at http://<dns-name>
-
 
 ---
 
@@ -110,7 +112,7 @@ npm install
 - Public-facing ALB with HTTP listener
 - Targets the ECS service using port 80
 - Access logs delivered to **S3** with prefix based on environment(this will help identify
-the logs streams from different env in a centralized observability tool )
+  the logs streams from different env in a centralized observability tool )
 
 ### ✅ S3 Logging Bucket
 
@@ -127,45 +129,28 @@ the logs streams from different env in a centralized observability tool )
 - Outbound rules restricted where applicable
 
 ### ✅ Multi-Environment Support
+
 Each environment (e.g., dev, prod) is a separate CDK `Stage`, allowing isolated deployments:
-All resource names are prefixed with an  environment aware prefix(`<projectPrefix>-<deploymentEnv>` ex: EMD-Dev)
+All resource names are prefixed with an environment aware prefix(`<projectPrefix>-<deploymentEnv>` ex: EMD-Dev)
 This way resource name conflict is avoided when deploying same infra accross multiple environments.
-we provide environment configuration parameters for vpc, alb, ECS S3Bucket Log to allow customization based on 
+we provide environment configuration parameters for vpc, alb, ECS S3Bucket Log to allow customization based on
 each environment needs.
-All defaults are configured in a `/env-config/base.json` file with specific customizations/overrides implemented in envrionment specfic config files e.g.`dev.json`, `prod.json`, 
-
-
+All defaults are configured in a `/env/base.json` file with specific customizations/overrides implemented in envrionment specfic config files e.g.`dev.json`, `prod.json`,
 
 ---
 
 ## 📈 CI/CD Integration
-The deployment script have been configured 
-This project is compatible with GitHub Actions, CodePipeline, etc. Sample GitHub Actions step:
 
-```yaml
-- name: CDK Deploy
-  run: |
-    npm run build
-    npm run deploy:dev
-```
+The deployment script have been configured in package.json for easy integration of CI/CD to multiple
+environments.
 
----
-
-## 🧪 Testing
-
-```bash
-npm run test
-```
-
----
-
-## 🧰 Helpful Commands
-
-```bash
-cdk synth          # Generate CloudFormation templates
-cdk diff           # Show infrastructure changes
-cdk deploy         # Deploy to AWS
-cdk destroy        # Teardown deployed stacks
+```json
+  "scripts": {
+    "deploy:dev": "export DEPLOYMENT_ENV='dev' && cdk deploy",
+    "deploy:qa": "export DEPLOYMENT_ENV='qa' && cdk deploy",
+    "deploy:stg": "export DEPLOYMENT_ENV='stg' && cdk deploy",
+    "deploy:prod": "export DEPLOYMENT_ENV='prod' && cdk deploy"
+  },
 ```
 
 ---

@@ -9,7 +9,7 @@ export class Helpers {
    * @returns A formatted bucket name
    */
   static generateBucketName(region: string, env: string): string {
-    const timestamp = new Date().toISOString().split('T')[0];
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     const result = `${env}-${region}-${timestamp}`;
     return result.toLocaleLowerCase();
   }

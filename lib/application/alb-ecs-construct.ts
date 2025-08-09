@@ -92,15 +92,15 @@ export class AlbEcsConstruct extends Construct {
         FAVORITE_DESSERT: props.containerEnvironmentVariables.favoriteDessert,
       },
       logging: new ecs.AwsLogDriver({ streamPrefix: 'infra' }),
-      // health check
-      healthCheck: {
-        command: ['CMD-SHELL', 'curl -f http://localhost/ || exit 1'],
-        // the properties below are optional
-        interval: cdk.Duration.seconds(30),
-        retries: 3,
-        startPeriod: cdk.Duration.seconds(120),
-        timeout: cdk.Duration.seconds(10),
-      },
+      // // health check
+      // healthCheck: {
+      //   command: ['CMD-SHELL', 'curl -f http://localhost/ || exit 1'],
+      //   // the properties below are optional
+      //   interval: cdk.Duration.seconds(30),
+      //   retries: 3,
+      //   startPeriod: cdk.Duration.seconds(120),
+      //   timeout: cdk.Duration.seconds(10),
+      // }
     });
 
     const service = new ecs.FargateService(this, `EcsService`, {
