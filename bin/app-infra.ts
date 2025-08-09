@@ -1,8 +1,12 @@
-import { App } from 'aws-cdk-lib';
-import { AppStack } from '../lib/application/app-stack';
-import { loadEnvConfig } from '../env-config-loader';
-import { IEnvConfig } from '../lib/models/env-config.model';
+require('module-alias/register')
 
+
+import { App } from 'aws-cdk-lib';
+import { AppStack } from '@application/app-stack';
+import { loadEnvConfig } from '../env-config-loader';
+import { IEnvConfig } from '@models/env-config.model';
+
+// list of supported envs.
 const deploymentEnvList = ['dev', 'qa', 'stg', 'prod'];
 //set deployment env at runtime: export DEPLOYMENT_ENV=dev|qa|stg|prod
 const deploymentEnv = process.env.DEPLOYMENT_ENV || 'dev';

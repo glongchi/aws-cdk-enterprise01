@@ -1,6 +1,6 @@
 import { Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { IVpcProps, VpcConstruct } from '../networking/vpc-construct';
+import { IVpcProps, VpcConstruct } from '../network/vpc-construct';
 import { ILoggingBucketProps, LoggingBucket } from '../shared/logging-bucket';
 import { AlbEcsConstruct, IAlbEcsProps } from './alb-ecs-construct';
 import { IBaseProps } from '../shared/base.props';

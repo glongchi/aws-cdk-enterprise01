@@ -1,46 +1,14 @@
 import { Construct } from 'constructs';
-// import {
-//   Cluster,
-//   ContainerImage,
-//   FargateTaskDefinition,
-//   FargateService,
-//   CpuArchitecture,
-//   OperatingSystemFamily,
-//   ContainerDefinition,
-//   AwsLogDriver,
-//   FargatePlatformVersion,
-//   Protocol,
-// } from "aws-cdk-lib/aws-ecs";
-// import {
-//   ApplicationLoadBalancer,
-//   ApplicationProtocol,
-//   IpAddressType,
-// } from "aws-cdk-lib/aws-elasticloadbalancingv2";
-// import { Duration } from "aws-cdk-lib";
-// import {
-//   IVpc,
-//   Peer,
-//   Port,
-//   SecurityGroup,
-//   SubnetType,
-// } from "aws-cdk-lib/aws-ec2";
-// import path from "path";
-// import { Logging } from "aws-cdk-lib/custom-resources";
-// import { ILoggingBucketProps, LoggingBucket } from "../shared/logging-bucket";
-// import { IBaseProps } from "../shared/base.props";
-// import * as ecs from "aws-cdk-lib/aws-ecs";
-
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import { ApplicationProtocol } from 'aws-cdk-lib/aws-elasticloadbalancingv2';
-import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as path from 'path';
-import { IBaseProps } from '../shared/base.props';
-import { ILoggingBucketProps, LoggingBucket } from '../shared/logging-bucket';
-import { IContainerEnvironmentVariables } from '../models/env-config.model';
+import { IBaseProps } from '@shared/base.props';
+import { ILoggingBucketProps, LoggingBucket } from '@shared/logging-bucket';
+import { IContainerEnvironmentVariables } from '@models/env-config.model';
 
 export interface IAlbEcsProps extends IBaseProps {
   vpc: ec2.IVpc;
@@ -152,8 +120,8 @@ export class AlbEcsConstruct extends Construct {
     //#endregion
 
     //#region Application Load Balancer
-    // Create Application Load Balancer
 
+    // Create Application Load Balancer
     const alb = new elbv2.ApplicationLoadBalancer(this, 'AppALB', {
       vpc: props.vpc,
       internetFacing: true,
@@ -189,19 +157,5 @@ export class AlbEcsConstruct extends Construct {
     }
 
     //#endregion
-
-    //#region
-    //#endregion
-
-    // listener.addTargets('AppTargets', {
-    //   port: 80,
-    //   targets: [service],
-    //   protocol: ApplicationProtocol.HTTP,
-    //   targetGroupName: 'AppTG',
-    //   healthCheck: {
-    //     path: '/',
-    //     interval: Duration.seconds(30),
-    //   },
-    // });
   }
 }

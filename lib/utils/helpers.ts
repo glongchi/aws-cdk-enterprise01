@@ -1,4 +1,4 @@
-import { IEnvConfig } from '../models/env-config.model';
+import { IEnvConfig } from '@models/env-config.model';
 
 export class Helpers {
   /**

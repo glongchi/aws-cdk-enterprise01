@@ -1,5 +1,14 @@
 {
   "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "@utils/*": ["lib/utils/*"],
+      "@shared/*": ["lib/shared/*"],
+      "@models/*": ["lib/models/*"],
+      "@application/*": ["lib/application/*"],
+      "@lib/*": ["lib/*"],
+      "@env": ["env"]
+    },
     "target": "ES2022",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",

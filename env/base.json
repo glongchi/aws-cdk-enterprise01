@@ -13,8 +13,8 @@
   },
   "container": {
     "desiredCount": 1,
-    "minHealthyPercent": 100,
-    "maxHealthyPercent": 200,
+    "minHealthyPercent": 50,
+    "maxHealthyPercent": 100,
     "cpu": 512,
     "memoryLimitMiB": 1024
   },
