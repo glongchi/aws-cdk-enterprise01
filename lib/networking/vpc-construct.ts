@@ -1,8 +1,8 @@
-import { Construct } from "constructs";
-import { IVpc, SubnetConfiguration, Vpc } from "aws-cdk-lib/aws-ec2";
-import * as cdk from "aws-cdk-lib";
-import * as ec2 from "aws-cdk-lib/aws-ec2";
-import { IBaseProps } from "../shared/base.props";
+import { Construct } from 'constructs';
+import { IVpc, SubnetConfiguration, Vpc } from 'aws-cdk-lib/aws-ec2';
+import * as cdk from 'aws-cdk-lib';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { IBaseProps } from '../shared/base.props';
 
 /**
  * Interface for VPC properties
@@ -23,8 +23,7 @@ export class VpcConstruct extends Construct {
   constructor(scope: Construct, id: string, props: IVpcProps) {
     super(scope, id);
 
-
-    this.vpc = new Vpc(this, "Vpc", {
+    this.vpc = new Vpc(this, 'Vpc', {
       // vpcName: `${props.namePrefix}-Vpc`,
       maxAzs: props.maxAzs,
       ipAddresses: ec2.IpAddresses.cidr(props.cidr),
@@ -32,17 +31,16 @@ export class VpcConstruct extends Construct {
       subnetConfiguration: [
         {
           cidrMask: props.publicSubnetCidrMask,
-          name: "Public",
+          name: 'Public',
           subnetType: ec2.SubnetType.PUBLIC,
         },
         {
           cidrMask: props.privateSubnetCidrMask,
-          name: "Private",
+          name: 'Private',
           subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
         },
       ],
     });
-
   }
 
   // /**
@@ -105,5 +103,4 @@ export class VpcConstruct extends Construct {
   //   };
   //   return subnetConfig;
   // }
-
 }

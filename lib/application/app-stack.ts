@@ -1,12 +1,12 @@
-import { Stack, StackProps } from "aws-cdk-lib";
-import { Construct } from "constructs";
-import { IVpcProps, VpcConstruct } from "../networking/vpc-construct";
-import { ILoggingBucketProps, LoggingBucket } from "../shared/logging-bucket";
-import { AlbEcsConstruct, IAlbEcsProps } from "./alb-ecs-construct";
-import { IBaseProps } from "../shared/base.props";
-import { IVpc } from "aws-cdk-lib/aws-ec2";
-import { IEnvConfig } from "../models/env-config.model";
-import { Helpers } from "../utils/helpers";
+import { Stack, StackProps } from 'aws-cdk-lib';
+import { Construct } from 'constructs';
+import { IVpcProps, VpcConstruct } from '../networking/vpc-construct';
+import { ILoggingBucketProps, LoggingBucket } from '../shared/logging-bucket';
+import { AlbEcsConstruct, IAlbEcsProps } from './alb-ecs-construct';
+import { IBaseProps } from '../shared/base.props';
+import { IVpc } from 'aws-cdk-lib/aws-ec2';
+import { IEnvConfig } from '../models/env-config.model';
+import { Helpers } from '../utils/helpers';
 
 interface AppStackProps extends StackProps, IBaseProps {
   config: IEnvConfig;
@@ -15,7 +15,7 @@ interface AppStackProps extends StackProps, IBaseProps {
 export class AppStack extends Stack {
   constructor(scope: Construct, id: string, props: AppStackProps) {
     super(scope, id, props);
-    
+
     // Initialize VPC  properties
     const vpcProps: IVpcProps = {
       namePrefix: props.config.namePrefix,
@@ -35,28 +35,21 @@ export class AppStack extends Stack {
     };
 
     // Create VPC
-    const vpc = new VpcConstruct(this, "AppVpc", vpcProps);
-
-
+    const vpc = new VpcConstruct(this, 'AppVpc', vpcProps);
 
     // initialize albEcs construct props
-    const albEcsProps:IAlbEcsProps ={
-           namePrefix: props.config.namePrefix,
-          vpc : vpc.vpc,
-          desiredCount:  props.config.container.desiredCount,
-          minHealthyPercent: props.config.container.minHealthyPercent,
-          maxHealthyPercent: props.config.container.maxHealthyPercent,
-          cpu:  props.config.container.cpu,
-          memoryLimitMiB:  props.config.container.memoryLimitMiB,
-          containerEnvironmentVariables: props.config.containerEnvironmentVariables
-    }
+    const albEcsProps: IAlbEcsProps = {
+      namePrefix: props.config.namePrefix,
+      vpc: vpc.vpc,
+      desiredCount: props.config.container.desiredCount,
+      minHealthyPercent: props.config.container.minHealthyPercent,
+      maxHealthyPercent: props.config.container.maxHealthyPercent,
+      cpu: props.config.container.cpu,
+      memoryLimitMiB: props.config.container.memoryLimitMiB,
+      containerEnvironmentVariables: props.config.containerEnvironmentVariables,
+    };
 
     // ALB and ECS Cluster
-    new AlbEcsConstruct(
-      this,
-      "AlbEcs",
-      albEcsProps,
-      loggingBucketProps,
-    );
+    new AlbEcsConstruct(this, 'AlbEcs', albEcsProps, loggingBucketProps);
   }
 }

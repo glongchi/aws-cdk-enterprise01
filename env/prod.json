@@ -2,22 +2,21 @@
   "account": "xxxxxxxxxxx",
   "deploymentEnvironment": "prod",
 
-    "vpc":{
+  "vpc": {
     "maxAzs": 3,
     "natGateways": 3,
     "cidr": "172.0.0.0/16"
-     },
-
-  "container":{
-    "desiredCount": 3,
-      "minHealthyPercent":50,
-      "maxHealthyPercent":80,
-        "cpu": 512,
-        "memoryLimitMiB": 1024
   },
-  "logBucket":{
-  "logInstantAccessDuration":90,
-  "logExpirationDuration":180
+
+  "container": {
+    "desiredCount": 3,
+    "minHealthyPercent": 50,
+    "maxHealthyPercent": 80,
+    "cpu": 512,
+    "memoryLimitMiB": 1024
+  },
+  "logBucket": {
+    "logInstantAccessDuration": 90,
+    "logExpirationDuration": 180
   }
-     
 }

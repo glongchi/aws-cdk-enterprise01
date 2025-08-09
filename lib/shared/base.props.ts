@@ -1,10 +1,9 @@
 /**
  * common  base properties for constructs, stacks, and applications
- * 
+ *
  * @interface IBaseProps
  */
 export interface IBaseProps {
-
   /**
    * name convention: <Application|Project|Company name>-<DeploymentEnvironment>-[<DeploymentEnvironmentIndex>]-<resource name|tye>
    */

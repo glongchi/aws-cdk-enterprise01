@@ -4,26 +4,25 @@
   "appPrefix": "EMD",
   "deploymentEnvironment": "dev",
   "namePrefix": "",
-  "vpc":{
+  "vpc": {
     "maxAzs": 2,
     "natGateways": 1,
     "cidr": "10.0.0.0/16",
     "publicSubnetCidrMask": 24,
     "privateSubnetCidrMask": 24
   },
-  "container":{
+  "container": {
     "desiredCount": 1,
-      "minHealthyPercent":100,
-      "maxHealthyPercent":200,
-        "cpu": 512,
-        "memoryLimitMiB": 1024
+    "minHealthyPercent": 100,
+    "maxHealthyPercent": 200,
+    "cpu": 512,
+    "memoryLimitMiB": 1024
   },
-  "logBucket":{
-  "logInstantAccessDuration":30,
-  "logExpirationDuration":60
+  "logBucket": {
+    "logInstantAccessDuration": 30,
+    "logExpirationDuration": 60
   },
-  "containerEnvironmentVariables":{
+  "containerEnvironmentVariables": {
     "favoriteDessert": "Ice Cream"
-
   }
 }

@@ -18,44 +18,42 @@ export interface IEnvConfig {
   // logInstantAccessDuration: number;
   // logExpirationDuration: number;
   logBucket: ILogBucketConfig;
-  vpc: IVpcConfig,
-  container:IContainerConfig
-  containerEnvironmentVariables: IContainerEnvironmentVariables
+  vpc: IVpcConfig;
+  container: IContainerConfig;
+  containerEnvironmentVariables: IContainerEnvironmentVariables;
 }
 
 /**
- * 
+ *
  */
-export interface IVpcConfig{
-       maxAzs?: number;
-      natGateways?: number;
-      cidr: string;
-      publicSubnetCidrMask?: number;
-      privateSubnetCidrMask?: number;
+export interface IVpcConfig {
+  maxAzs?: number;
+  natGateways?: number;
+  cidr: string;
+  publicSubnetCidrMask?: number;
+  privateSubnetCidrMask?: number;
 }
 
 /**
- * 
+ *
  */
-export interface IContainerConfig{
-      desiredCount: number,
-      minHealthyPercent:number,
-      maxHealthyPercent:number
-      cpu: number,
-      memoryLimitMiB: number
+export interface IContainerConfig {
+  desiredCount: number;
+  minHealthyPercent: number;
+  maxHealthyPercent: number;
+  cpu: number;
+  memoryLimitMiB: number;
 }
 
-
-export interface IContainerEnvironmentVariables{
-      favoriteDessert: string
+export interface IContainerEnvironmentVariables {
+  favoriteDessert: string;
 }
 
 /**
- * 
+ *
  */
-export interface ILogBucketConfig{
+export interface ILogBucketConfig {
   // log frequent access duration before transitioning to infrequent access
   logInstantAccessDuration: number;
   logExpirationDuration: number;
-
 }
