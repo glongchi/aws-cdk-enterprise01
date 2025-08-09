@@ -43,10 +43,10 @@ export class AppStack extends Stack {
     const albEcsProps:IAlbEcsProps ={
           vpc : vpc.vpc,
           desiredCount:  props.config.container.desiredCount,
-          minHealthyPercent: props.config.container.desiredCount,
-          maxHealthyPercent: props.config.container.desiredCount,
-          cpu:  props.config.container.desiredCount,
-          memoryLimitMiB:  props.config.container.desiredCount
+          minHealthyPercent: props.config.container.minHealthyPercent,
+          maxHealthyPercent: props.config.container.maxHealthyPercent,
+          cpu:  props.config.container.cpu,
+          memoryLimitMiB:  props.config.container.memoryLimitMiB
     }
 
     // ALB and ECS Cluster
